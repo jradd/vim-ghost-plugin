@@ -1,20 +1,7 @@
 <img src='http://www.gnusosa.net/talks/workshop-vim-hackmeet/img/vim-editor_logo.png' />
-
-You can get VIM-Janus distribution using following steps
-Ubuntu
----
 <b>Pre requisites</b>
-
 <code>$ sudo apt-get install ruby-dev rake exuberant-ctags ack-grep</code>
-
-On 12.04, if using rvm, the following is required: (assuming 1.9.3)
-
-$ rvm pkg install openssl  
-$ rvm install 1.9.3 --with-openssl-dir=$HOME/.rvm/usr  
-$ rvm use 1.9.3 --default  
-$ rmdir $rvm_path/usr/ssl/certs
-$ ln -s /etc/ssl/certs $rvm_path/usr/ssl
-
+"asdasd"
 <b>Installation</b>
 
 <code>$ curl -Lo- https://bit.ly/janus-bootstrap | bash</code>
