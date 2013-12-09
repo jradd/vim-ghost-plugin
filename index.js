@@ -14,7 +14,7 @@ var Attributes= [
 ];
 var sanitize = require('validator').sanitize;
 
-var usage = "node index.js <existing_slug> --edit|--submit\nnode index <new_slug>";
+var usage = ["\n\n\tnode index.js <existing_slug> --edit|--submit\n\n", "\n\n\tnode index <new_slug> --title <title> [--file <file-name>]\n\n"];
 main();
 //subprocess();
 
@@ -34,7 +34,7 @@ function main() {
 				slug_array[row.slug] = true;
 			},
 			function () {
-				if (process.argv[2]){
+				if (process.argv[2]) {
 					slug = process.argv[2];
 					if (slug_array[slug]) {
 						if (process.argv[3] && process.argv[3] == "--edit") {
@@ -62,24 +62,67 @@ function main() {
 								markdown = data;
 								var html = converter.makeHtml(markdown);
 								//console.log(query);
-								db.prepare("UPDATE posts set updated_by=1, updated_at=(?), markdown='(?)', html='(?)' where slug='(?)'").run(updated_at, markdown, html, slug, function(err) {}).finalize(function (err){db.close();});
-								
+								db.prepare("UPDATE posts set updated_by=1, updated_at=(?), markdown=(?), html=(?) where slug=(?)")
+								.run(updated_at, markdown, html, slug, function(err) {
+										if(err) {
+											console.log(err);
+										}
+								})
+								.finalize(function (err) {
+									if(err) {
+										console.log(err);
+										db.close();
+									}
+								});
 							});
 						} else {
 							console.log("Slug "+slug+" already exists.");
-							console.log(usage);
+							console.log(usage[0]);
 						}
 					} else {
-						fs.readFile(postfile, 'utf8', function (err,data) {
-							sys.puts(moment(new Date()).toDate().getTime());
-							if (err) {
-								return sys.puts(err);
+						if (/\s/.test(slug)) {
+							console.log("Slug cannot have white spaces");
+							return;
+						}
+						if (process.argv[3] && process.argv[3] == "--title") {
+							if (process.argv[4]) {
+								var title = process.argv[4];
+								if (process.argv[5] && process.argv[5] == "--file" && process.argv[6]) {
+									postfile = process.argv[6];
+								} else {
+									console.log("\n\npost.txt is considered for the post\n\n");
+								}
+								var uid = uuid.v4();
+								fs.readFile(postfile, 'utf8', function (err,data) {
+									if (err) {
+										return sys.puts(err);
+									}
+									var created_by = 1;
+									var created_at = moment(new Date()).toDate().getTime();
+									markdown = data;
+									var html = converter.makeHtml(markdown);
+									db.prepare("INSERT INTO posts (uuid, created_at, created_by, published_by, published_at, language, author_id, status, slug, title, markdown, html) VALUES((?), (?), 1, 1, (?), (?), 1, (?), (?), (?), (?), (?))")
+									.run(uid, created_at, created_at, "en_US", "published", slug, title, markdown, html, function(err) {
+										if(err) {
+											console.log(err);
+										}
+									})
+									.finalize(function (err) {
+										if(err) {
+											console.log(err);
+											db.close();
+										}
+									});
+								});
+							} else {
+								//console.log("Slug "+slug+" doesn't exist, a title is required");
+								console.log("Title cannot be empty");
+								console.log(usage[1]);
 							}
-							sys.puts(uuid.v4());
-							markdown = data;
-							var html = converter.makeHtml(markdown);
-							sys.puts(html);
-						});
+						} else {
+							console.log("Slug "+slug+" doesn't exist, a title is required");
+							console.log(usage[1]);
+						}
 					}
 				} else {
 					for (var key in slug_array) {

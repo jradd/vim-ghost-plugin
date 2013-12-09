@@ -1,7 +1,0 @@
-<img src='http://www.gnusosa.net/talks/workshop-vim-hackmeet/img/vim-editor_logo.png' />
-<b>Pre requisites</b>
-<code>$ sudo apt-get install ruby-dev rake exuberant-ctags ack-grep</code>
-"asdasd"
-<b>Installation</b>
-
-<code>$ curl -Lo- https://bit.ly/janus-bootstrap | bash</code>
