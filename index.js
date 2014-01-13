@@ -6,7 +6,7 @@ var Attributes= [
 var usage = [
 	"\nTo list the existing posts:\n\tnode index.js\n",
 	"\nTo edit an existing post:\n\tnode index.js <existing_slug>\n",
-	"\nTo create a new post:\n\tnode index.js <new_slug> --title <title>\n",
+	"\nTo create a new post:\n\tnode index.js <new_slug> --title <title> [--file <file>]\n",
 	"\nTo view markdown rules:\n\tcat markdown-guide.md\n"
 ];
 main();
@@ -35,6 +35,9 @@ function main() {
 					if (process.argv[2] == "-h" || process.argv[2] == "--help") {
 						console.log(usage[0]+usage[1]+usage[2]+usage[3]);
 						return;
+					} else if (process.argv[2] == "-l" || process.argv[2] == "--list") {
+						show_existing_slugs();
+						return;
 					}
 					slug = process.argv[2];
 					if (/\s/.test(slug) || /[A-Z]/.test(slug)) {
@@ -52,14 +55,17 @@ function main() {
 						}
 					}
 				} else {
-					show_existing_slugs();
+					console.log(usage[0]+usage[1]+usage[2]+usage[3]);
+					return;
 				}
 			}
 		);
 	});
 	function show_existing_slugs() {
 		for (var key in slug_array) {
-			console.log("\n\tslug => "+key + "\ttitle => "+slug_array[key]);
+			console.log(key);
+			//console.log(key+" , "+slug_array[key]);
+			//console.log("\n\tslug => "+key + "\ttitle => "+slug_array[key]);
 		}
 		console.log(" ");
 	}
